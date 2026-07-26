@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-st.set_page_config(page_title="Audd4live PoC", page_icon="🎵")
+st.set_page_config(page_title="Audio Fingerprint Checker (PoC)", page_icon="🎵")
 
-st.title("Audd4live - Copyright Checker (PoC)")
+st.title("Audio Fingerprint Checker (PoC)")
 st.write("Lade eine Audio-Datei hoch, um sie auf urheberrechtlich geschütztes Material über die Audd.io API zu prüfen.")
 
 # API Key input (default to env variable if present)

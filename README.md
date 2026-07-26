@@ -1,4 +1,4 @@
-# Audd4live
+# Audio Fingerprint Checker
 
 Ein Audio-Tool für Ableton (und andere DAWs), mit dem man überprüfen kann, ob in einem Mix urheberrechtlich geschütztes Material (z.B. Samples) verwendet wurde, bevor man den Track veröffentlicht. So können Urheberrechts-Strikes vermieden werden.
 
