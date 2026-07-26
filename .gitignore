@@ -17,3 +17,11 @@ __pycache__/
 *.code-workspace
 *.mp3
 *.wav
+
+# Builds and Releases
+releases/
+desktop-app/dist/
+desktop-app/dist-electron/
+desktop-app/node_modules/
+vst-plugin/build/
+vst-plugin/JUCE/
