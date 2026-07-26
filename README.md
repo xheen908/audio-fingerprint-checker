@@ -4,11 +4,15 @@ Ein Audio-Tool für Ableton (und andere DAWs), mit dem man überprüfen kann, ob
 
 ## Phase 1: Proof of Concept (Python Web-App)
 
-Aktuell befindet sich das Projekt in der Proof-of-Concept-Phase. Es gibt eine kleine Web-App (gebaut mit Streamlit), in der du eine Audiodatei (.mp3, .wav) hochladen kannst, welche dann gegen die [Audd.io API](https://audd.io/) abgeglichen wird.
+Aktuell befindet sich das Projekt in der Proof-of-Concept-Phase. Es gibt eine kleine Web-App (gebaut mit Streamlit), in der du eine Audiodatei (.mp3, .wav) hochladen kannst, welche dann parallel gegen die [Audd.io API](https://audd.io/) und die [ACRCloud API](https://www.acrcloud.com/) abgeglichen wird.
 
 ### Voraussetzungen
 1. Du benötigst [Python 3](https://www.python.org/downloads/) installiert auf deinem Rechner.
-2. Du benötigst einen API-Key von [Audd.io](https://audd.io/). (Den Key kannst du direkt in der Web-App eingeben oder in einer `.env` Datei hinterlegen).
+2. Du benötigst API-Keys (du kannst auch nur einen der beiden Dienste nutzen):
+   - **Audd.io:** Einen API-Key.
+   - **ACRCloud:** Ein Audio & Video Recognition Project (Host, Access Key, Secret Key).
+   
+   Die Keys kannst du direkt in der Web-App eingeben und dauerhaft speichern (sie landen dann in einer lokalen `.env` Datei).
 
 ### Installation & Start (Ohne Docker)
 
@@ -49,10 +53,11 @@ Die App ist nun ebenfalls unter [http://localhost:8501](http://localhost:8501) e
 
 ### Bedienung
 
-1. Gib deinen Audd.io API-Key in das obere Passwortfeld ein.
-2. Lade deine fertige Audio-Datei (z.B. den Master aus Ableton) per Drag & Drop in das Feld.
-3. Klicke auf **Analysieren**.
-4. Das Tool zeigt dir umgehend an, ob ein Song erkannt wurde (inklusive Titel, Künstler und Cover-Art).
+1. Gib deine API-Keys (für Audd.io und/oder ACRCloud) in den Feldern unter "API Konfiguration" ein.
+2. Klicke auf **Keys Speichern**, damit du sie beim nächsten Mal nicht neu eingeben musst.
+3. Lade deine fertige Audio-Datei (z.B. den Master aus Ableton) per Drag & Drop in das Feld.
+4. Klicke auf **Analysieren**.
+5. Das Tool fragt nun beide APIs parallel an und zeigt dir die Ergebnisse übersichtlich in zwei verschiedenen Tabs an (inklusive Song-Titel, Künstler, Cover-Art, Score und mehr).
 
 ---
 *Die langfristige Vision ist es, dies direkt als C++ VST3 / AU Audio-Plugin umzusetzen, das man sich einfach auf den Master-Channel in der DAW ziehen kann.*
