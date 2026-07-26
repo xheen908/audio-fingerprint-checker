@@ -14,3 +14,6 @@ __pycache__/
 
 # Mac
 .DS_Store
+*.code-workspace
+*.mp3
+*.wav
