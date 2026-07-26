@@ -1,0 +1,9 @@
+services:
+  audd4live:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - AUDD_API_KEY=${AUDD_API_KEY:-}
+    volumes:
+      - ./poc:/app

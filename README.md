@@ -10,7 +10,7 @@ Aktuell befindet sich das Projekt in der Proof-of-Concept-Phase. Es gibt eine kl
 1. Du benötigst [Python 3](https://www.python.org/downloads/) installiert auf deinem Rechner.
 2. Du benötigst einen API-Key von [Audd.io](https://audd.io/). (Den Key kannst du direkt in der Web-App eingeben oder in einer `.env` Datei hinterlegen).
 
-### Installation & Start
+### Installation & Start (Ohne Docker)
 
 1. Klicke dich in das Verzeichnis des Projekts und wechsle in den `poc`-Ordner:
    ```bash
@@ -34,6 +34,18 @@ Aktuell befindet sich das Projekt in der Proof-of-Concept-Phase. Es gibt eine kl
    ```
 
 Die Anwendung öffnet sich nun automatisch im Browser unter [http://localhost:8501](http://localhost:8501).
+
+### Installation & Start (Mit Docker - Empfohlen)
+
+Wenn du Docker installiert hast, kannst du die App ganz einfach ohne lokale Python-Umgebung starten:
+
+1. Stelle sicher, dass du dich im Hauptverzeichnis des Projekts befindest (`/Audd4live`).
+2. Führe folgenden Befehl aus:
+   ```bash
+   docker compose up --build
+   ```
+
+Die App ist nun ebenfalls unter [http://localhost:8501](http://localhost:8501) erreichbar. Wenn du den Container im Hintergrund laufen lassen möchtest, hänge einfach ein `-d` an den Befehl an (`docker compose up -d --build`).
 
 ### Bedienung
 
