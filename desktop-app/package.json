@@ -1,11 +1,12 @@
 {
   "name": "desktop-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0-634bcea",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "build:vite": "vite build",
+    "prebuild": "node -e \"const cp=require('child_process');const fs=require('fs');const hash=cp.execSync('git rev-parse --short HEAD').toString().trim();const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='1.0.0-'+hash;fs.writeFileSync('package.json',JSON.stringify(pkg,null,2));console.log('Version set to '+pkg.version)\"",
     "build": "vite build && electron-builder",
     "lint": "oxlint",
     "preview": "vite preview"
