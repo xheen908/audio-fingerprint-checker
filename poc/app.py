@@ -131,14 +131,40 @@ if uploaded_file is not None:
                                 music = metadata.get('music', [])
                                 if music:
                                     song_info = music[0]
-                                    st.success(f"Song erkannt!")
+                                    st.success(f"Song erkannt! (ACRCloud)")
                                     
-                                    st.write(f"**Titel:** {song_info.get('title')}")
-                                    st.write(f"**Künstler:** {', '.join([a.get('name', '') for a in song_info.get('artists', [])])}")
-                                    if 'album' in song_info:
-                                        st.write(f"**Album:** {song_info.get('album', {}).get('name')}")
-                                    if 'release_date' in song_info:
-                                        st.write(f"**Release Date:** {song_info.get('release_date')}")
+                                    col_c, col_d = st.columns(2)
+                                    with col_c:
+                                        st.write(f"**Titel:** {song_info.get('title')}")
+                                        st.write(f"**Künstler:** {', '.join([a.get('name', '') for a in song_info.get('artists', [])])}")
+                                        if 'album' in song_info:
+                                            st.write(f"**Album:** {song_info.get('album', {}).get('name')}")
+                                        if 'release_date' in song_info:
+                                            st.write(f"**Release Date:** {song_info.get('release_date')}")
+                                        if 'label' in song_info:
+                                            st.write(f"**Label:** {song_info.get('label')}")
+                                        if 'genres' in song_info:
+                                            st.write(f"**Genres:** {', '.join([g.get('name', '') for g in song_info.get('genres', [])])}")
+                                            
+                                    with col_d:
+                                        st.write(f"**Match Score:** {song_info.get('score', 'N/A')}%")
+                                        if 'play_offset_ms' in song_info:
+                                            st.write(f"**Erkannt bei:** {int(song_info.get('play_offset_ms') / 1000)}s")
+                                        if 'duration_ms' in song_info:
+                                            st.write(f"**Song Länge:** {int(song_info.get('duration_ms') / 1000)}s")
+                                            
+                                        # External metadata (Spotify, Youtube, etc)
+                                        ext_meta = song_info.get('external_metadata', {})
+                                        if ext_meta:
+                                            st.write("**Externe Links:**")
+                                            if 'spotify' in ext_meta:
+                                                spotify_id = ext_meta['spotify'].get('track', {}).get('id')
+                                                if spotify_id:
+                                                    st.markdown(f"- [Spotify Link](https://open.spotify.com/track/{spotify_id})")
+                                            if 'youtube' in ext_meta:
+                                                yt_id = ext_meta['youtube'].get('vid')
+                                                if yt_id:
+                                                    st.markdown(f"- [YouTube Link](https://www.youtube.com/watch?v={yt_id})")
                                 else:
                                     st.info("Kein Song in den Metadaten gefunden.")
                             elif result.get('status', {}).get('code') == 1001:
