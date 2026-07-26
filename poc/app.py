@@ -104,7 +104,7 @@ if uploaded_file is not None:
                             signature_version = "1"
                             timestamp = str(int(time.time()))
                             
-                            string_to_sign = '\\n'.join([http_method, http_uri, acr_access_key, data_type, signature_version, timestamp])
+                            string_to_sign = '\n'.join([http_method, http_uri, acr_access_key, data_type, signature_version, timestamp])
                             sign = base64.b64encode(hmac.new(acr_secret_key.encode('ascii'), string_to_sign.encode('ascii'), digestmod=hashlib.sha1).digest()).decode('ascii')
                             
                             sample_bytes = len(uploaded_file.getvalue())
