@@ -127,10 +127,10 @@ function App() {
                 ) : results.audd?.status === 'success' && results.audd?.result ? (
                   <div className="song-info">
                     <div className="song-details">
-                      <p><strong>Titel:</strong> {results.audd.result.title}</p>
-                      <p><strong>Künstler:</strong> {results.audd.result.artist}</p>
-                      <p><strong>Album:</strong> {results.audd.result.album}</p>
-                      <p><strong>Release Date:</strong> {results.audd.result.release_date}</p>
+                      <strong>Titel:</strong> <p>{results.audd.result.title}</p>
+                      <strong>Künstler:</strong> <p>{results.audd.result.artist}</p>
+                      <strong>Album:</strong> <p>{results.audd.result.album}</p>
+                      <strong>Release Date:</strong> <p>{results.audd.result.release_date}</p>
                     </div>
                     {results.audd.result.spotify?.album?.images?.[0]?.url && (
                       <img src={results.audd.result.spotify.album.images[0].url} alt="Cover" />
@@ -149,12 +149,12 @@ function App() {
                 ) : results.acrcloud?.status?.msg === 'Success' && results.acrcloud?.metadata?.music?.length > 0 ? (
                   <div className="song-info">
                     <div className="song-details">
-                      <p><strong>Titel:</strong> {results.acrcloud.metadata.music[0].title}</p>
-                      <p><strong>Künstler:</strong> {results.acrcloud.metadata.music[0].artists?.map(a => a.name).join(', ')}</p>
-                      <p><strong>Album:</strong> {results.acrcloud.metadata.music[0].album?.name}</p>
-                      <p><strong>Label:</strong> {results.acrcloud.metadata.music[0].label}</p>
-                      <p><strong>Genres:</strong> {results.acrcloud.metadata.music[0].genres?.map(g => g.name).join(', ')}</p>
-                      <p><strong>Score:</strong> {results.acrcloud.metadata.music[0].score}%</p>
+                      <strong>Titel:</strong> <p>{results.acrcloud.metadata.music[0].title}</p>
+                      <strong>Künstler:</strong> <p>{results.acrcloud.metadata.music[0].artists?.map(a => a.name).join(', ')}</p>
+                      <strong>Album:</strong> <p>{results.acrcloud.metadata.music[0].album?.name}</p>
+                      <strong>Label:</strong> <p>{results.acrcloud.metadata.music[0].label}</p>
+                      <strong>Genres:</strong> <p>{results.acrcloud.metadata.music[0].genres?.map(g => g.name).join(', ')}</p>
+                      <strong>Score:</strong> <p>{results.acrcloud.metadata.music[0].score}%</p>
                     </div>
                   </div>
                 ) : (

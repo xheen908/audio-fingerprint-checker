@@ -165,25 +165,38 @@ button:disabled {
 
 .song-info {
   display: flex;
-  gap: 20px;
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
 }
 
-.song-details p {
-  color: white;
-  margin: 5px 0;
-  font-size: 14px;
+.song-details {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  row-gap: 12px;
+  align-items: baseline;
+  flex: 1;
 }
 
 .song-details strong {
   color: #aaaaaa;
-  display: inline-block;
-  width: 100px;
+  font-size: 14px;
+  text-align: right;
+  padding-right: 15px;
+}
+
+.song-details p {
+  color: white;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .song-info img {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   border-radius: 8px;
   object-fit: cover;
   border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
