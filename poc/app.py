@@ -12,7 +12,20 @@ st.title("Audd4live - Copyright Checker (PoC)")
 st.write("Lade eine Audio-Datei hoch, um sie auf urheberrechtlich geschütztes Material über die Audd.io API zu prüfen.")
 
 # API Key input (default to env variable if present)
-api_key = st.text_input("Audd.io API Key", value=os.getenv("AUDD_API_KEY", ""), type="password")
+col1, col2 = st.columns([3, 1])
+with col1:
+    api_key = st.text_input("Audd.io API Key", value=os.getenv("AUDD_API_KEY", ""), type="password")
+with col2:
+    st.write("") # spacing
+    st.write("") # spacing
+    if st.button("Key Speichern"):
+        if api_key:
+            with open(".env", "w") as f:
+                f.write(f"AUDD_API_KEY={api_key}\n")
+            st.success("Gespeichert!")
+            os.environ["AUDD_API_KEY"] = api_key
+        else:
+            st.warning("Bitte erst einen Key eingeben.")
 
 uploaded_file = st.file_uploader("Wähle eine Audio-Datei", type=['mp3', 'wav', 'm4a', 'flac'])
 
