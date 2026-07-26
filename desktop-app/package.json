@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "private": true,
-  "version": "1.0.0-634bcea",
+  "version": "1.0.0-0cdfcd4",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
