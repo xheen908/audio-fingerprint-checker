@@ -5,7 +5,10 @@
   "description": "Desktop interface for Audd4Live",
   "main": "electron/main.js",
   "scripts": {
+    "preinstall": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 || git init",
+    "predev": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 || git init",
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "prebuild": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 || git init",
     "build:vite": "vite build",
     "build": "vite build && electron-builder",
     "lint": "oxlint",

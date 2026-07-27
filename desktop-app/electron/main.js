@@ -7,6 +7,8 @@ const crypto = require('crypto');
 
 let mainWindow;
 
+app.name = 'Audio Fingerprint Checker';
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,

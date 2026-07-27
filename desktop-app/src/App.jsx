@@ -350,6 +350,24 @@ function App() {
                       <strong>Label:</strong> <p>{results.acrcloud.metadata.music[0].label}</p>
                       <strong>Genres:</strong> <p>{results.acrcloud.metadata.music[0].genres?.map(g => g.name).join(', ')}</p>
                       <strong>Score:</strong> <p>{results.acrcloud.metadata.music[0].score}%</p>
+                      
+                      <hr style={{ margin: '10px 0', borderColor: '#444' }} />
+                      <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Content IDs</h4>
+                      {results.acrcloud.metadata.music[0].acrid && (
+                        <><strong style={{ color: '#888' }}>ACRID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].acrid}</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].external_ids?.isrc && (
+                        <><strong style={{ color: '#888' }}>ISRC:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_ids.isrc}</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].external_ids?.upc && (
+                        <><strong style={{ color: '#888' }}>UPC:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_ids.upc}</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].external_metadata?.spotify?.track?.id && (
+                        <><strong style={{ color: '#888' }}>Spotify ID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_metadata.spotify.track.id}</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].external_metadata?.youtube?.vid && (
+                        <><strong style={{ color: '#888' }}>YouTube VID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_metadata.youtube.vid}</p></>
+                      )}
                     </div>
                   </div>
                 ) : (
