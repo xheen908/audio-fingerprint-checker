@@ -368,6 +368,35 @@ function App() {
                       {results.acrcloud.metadata.music[0].external_metadata?.youtube?.vid && (
                         <><strong style={{ color: '#888' }}>YouTube VID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_metadata.youtube.vid}</p></>
                       )}
+
+                      <hr style={{ margin: '10px 0', borderColor: '#444' }} />
+                      <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Time Offsets</h4>
+                      {results.acrcloud.metadata.music[0].db_begin_time_offset_ms !== undefined && (
+                        <><strong style={{ color: '#888' }}>DB Begin:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].db_begin_time_offset_ms} ms</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].db_end_time_offset_ms !== undefined && (
+                        <><strong style={{ color: '#888' }}>DB End:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].db_end_time_offset_ms} ms</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].sample_begin_time_offset_ms !== undefined && (
+                        <><strong style={{ color: '#888' }}>Sample Begin:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].sample_begin_time_offset_ms} ms</p></>
+                      )}
+                      {results.acrcloud.metadata.music[0].sample_end_time_offset_ms !== undefined && (
+                        <><strong style={{ color: '#888' }}>Sample End:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].sample_end_time_offset_ms} ms</p></>
+                      )}
+
+                      {results.acrcloud.metadata.music[0].rights_claim && results.acrcloud.metadata.music[0].rights_claim.length > 0 && (
+                        <>
+                          <hr style={{ margin: '10px 0', borderColor: '#444' }} />
+                          <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Rights Claim</h4>
+                          {results.acrcloud.metadata.music[0].rights_claim.map((claim, idx) => (
+                            <div key={idx} style={{ marginBottom: '5px' }}>
+                              {claim.distributor && (
+                                <><strong style={{ color: '#888' }}>Distributor:</strong> <p style={{ fontSize: '0.9em' }}>{claim.distributor.name} (ID: {claim.distributor.id})</p></>
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
                   </div>
                 ) : (
