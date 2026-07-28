@@ -7,10 +7,15 @@ function App() {
   const [acrAccessKey, setAcrAccessKey] = useState(localStorage.getItem('acrAccessKey') || '');
   const [acrSecretKey, setAcrSecretKey] = useState(localStorage.getItem('acrSecretKey') || '');
   
+  const [fsBearerToken, setFsBearerToken] = useState(localStorage.getItem('fsBearerToken') || '');
+  const [fsContainerId, setFsContainerId] = useState(localStorage.getItem('fsContainerId') || '');
+  const [fsRegion, setFsRegion] = useState(localStorage.getItem('fsRegion') || 'eu-west-1');
+  
   const [isRecording, setIsRecording] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0); // Legacy fallback
   const [results, setResults] = useState(null);
   const [activeTab, setActiveTab] = useState('audd'); // audd | acr
+  const [selectedAcrTrack, setSelectedAcrTrack] = useState(0);
   
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
@@ -103,6 +108,9 @@ function App() {
     localStorage.setItem('acrHost', acrHost);
     localStorage.setItem('acrAccessKey', acrAccessKey);
     localStorage.setItem('acrSecretKey', acrSecretKey);
+    localStorage.setItem('fsBearerToken', fsBearerToken);
+    localStorage.setItem('fsContainerId', fsContainerId);
+    localStorage.setItem('fsRegion', fsRegion);
     alert('Keys erfolgreich gespeichert!');
     
     // Also send updated keys to C++ Backend via URL intercept
@@ -128,6 +136,7 @@ function App() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [scanStatus, setScanStatus] = useState('');
 
   const handleFileSelect = async () => {
     if (window.electronAPI) {
@@ -147,7 +156,12 @@ function App() {
         audd_api_key: auddKey,
         acr_host: acrHost,
         acr_access_key: acrAccessKey,
-        acr_secret_key: acrSecretKey
+        acr_secret_key: acrSecretKey,
+        fs_bearer_token: fsBearerToken,
+        fs_container_id: fsContainerId,
+        fs_region: fsRegion
+      }, (statusMessage) => {
+        setScanStatus(statusMessage);
       });
       setResults(data);
     } catch (err) {
@@ -221,6 +235,43 @@ function App() {
                   </div>
                 </div>
               </div>
+
+              <div className="api-group acr-group" style={{marginTop: '20px', borderTop: '1px solid #444', paddingTop: '15px'}}>
+                <h3 style={{fontSize: '14px', marginBottom: '10px', color: '#ccc'}}>ACRCloud File Scanning API</h3>
+                <div className="input-row">
+                  <div className="input-col">
+                    <label>Bearer Token</label>
+                    <input 
+                      type="password" 
+                      value={fsBearerToken} 
+                      onChange={(e) => setFsBearerToken(e.target.value)} 
+                      placeholder="Bearer..."
+                    />
+                  </div>
+                  <div className="input-col">
+                    <label>Container Region</label>
+                    <select 
+                      value={fsRegion} 
+                      onChange={(e) => setFsRegion(e.target.value)}
+                      style={{width: '100%', padding: '8px', background: '#1a1a1a', color: 'white', border: '1px solid #3e3e3e', borderRadius: '4px'}}
+                    >
+                      <option value="eu-west-1">eu-west-1</option>
+                      <option value="us-west-2">us-west-2</option>
+                      <option value="ap-southeast-1">ap-southeast-1</option>
+                    </select>
+                  </div>
+                  <div className="input-col">
+                    <label>Container ID</label>
+                    <input 
+                      type="text" 
+                      value={fsContainerId} 
+                      onChange={(e) => setFsContainerId(e.target.value)} 
+                      placeholder="ID..."
+                    />
+                  </div>
+                </div>
+              </div>
+
               <button className="save-btn" onClick={handleSaveKeys}>Keys Speichern</button>
             </div>
           </div>
@@ -341,67 +392,143 @@ function App() {
               <div>
                 {!acrAccessKey ? (
                   <p>ACRCloud übersprungen (fehlende Konfiguration).</p>
-                ) : results.acrcloud?.status?.msg === 'Success' && results.acrcloud?.metadata?.music?.length > 0 ? (
-                  <div className="song-info">
-                    <div className="song-details">
-                      <strong>Titel:</strong> <p>{results.acrcloud.metadata.music[0].title}</p>
-                      <strong>Künstler:</strong> <p>{results.acrcloud.metadata.music[0].artists?.map(a => a.name).join(', ')}</p>
-                      <strong>Album:</strong> <p>{results.acrcloud.metadata.music[0].album?.name}</p>
-                      <strong>Label:</strong> <p>{results.acrcloud.metadata.music[0].label}</p>
-                      <strong>Genres:</strong> <p>{results.acrcloud.metadata.music[0].genres?.map(g => g.name).join(', ')}</p>
-                      <strong>Score:</strong> <p>{results.acrcloud.metadata.music[0].score}%</p>
-                      
-                      <hr style={{ margin: '10px 0', borderColor: '#444' }} />
-                      <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Content IDs</h4>
-                      {results.acrcloud.metadata.music[0].acrid && (
-                        <><strong style={{ color: '#888' }}>ACRID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].acrid}</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].external_ids?.isrc && (
-                        <><strong style={{ color: '#888' }}>ISRC:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_ids.isrc}</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].external_ids?.upc && (
-                        <><strong style={{ color: '#888' }}>UPC:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_ids.upc}</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].external_metadata?.spotify?.track?.id && (
-                        <><strong style={{ color: '#888' }}>Spotify ID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_metadata.spotify.track.id}</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].external_metadata?.youtube?.vid && (
-                        <><strong style={{ color: '#888' }}>YouTube VID:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].external_metadata.youtube.vid}</p></>
-                      )}
+                ) : (() => {
+                  // ACRCloud often wraps the result under 'metadata' but the user provided structure shows direct 'music'
+                  // We handle both `results.acrcloud.metadata.music` and `results.acrcloud.music`
+                  const musicList = results.acrcloud?.metadata?.music || results.acrcloud?.music || [];
+                  const displayLimit = musicList.length;
+                  
+                  if (musicList.length === 0) {
+                    return <p>Kein Song erkannt oder ein Fehler ist aufgetreten (ACRCloud).</p>;
+                  }
 
-                      <hr style={{ margin: '10px 0', borderColor: '#444' }} />
-                      <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Time Offsets</h4>
-                      {results.acrcloud.metadata.music[0].db_begin_time_offset_ms !== undefined && (
-                        <><strong style={{ color: '#888' }}>DB Begin:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].db_begin_time_offset_ms} ms</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].db_end_time_offset_ms !== undefined && (
-                        <><strong style={{ color: '#888' }}>DB End:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].db_end_time_offset_ms} ms</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].sample_begin_time_offset_ms !== undefined && (
-                        <><strong style={{ color: '#888' }}>Sample Begin:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].sample_begin_time_offset_ms} ms</p></>
-                      )}
-                      {results.acrcloud.metadata.music[0].sample_end_time_offset_ms !== undefined && (
-                        <><strong style={{ color: '#888' }}>Sample End:</strong> <p style={{ fontSize: '0.9em' }}>{results.acrcloud.metadata.music[0].sample_end_time_offset_ms} ms</p></>
-                      )}
+                  // Handle new structure where track data is inside `item.result`, or fallback to flat structure
+                  const rawTrackItem = musicList[selectedAcrTrack];
+                  if (!rawTrackItem) return null;
+                  
+                  const track = rawTrackItem.result || rawTrackItem;
 
-                      {results.acrcloud.metadata.music[0].rights_claim && results.acrcloud.metadata.music[0].rights_claim.length > 0 && (
-                        <>
-                          <hr style={{ margin: '10px 0', borderColor: '#444' }} />
-                          <h4 style={{ margin: '0 0 5px 0', color: '#aaa' }}>Rights Claim</h4>
-                          {results.acrcloud.metadata.music[0].rights_claim.map((claim, idx) => (
-                            <div key={idx} style={{ marginBottom: '5px' }}>
-                              {claim.distributor && (
-                                <><strong style={{ color: '#888' }}>Distributor:</strong> <p style={{ fontSize: '0.9em' }}>{claim.distributor.name} (ID: {claim.distributor.id})</p></>
+                  const handleDownloadTxt = () => {
+                    const dataStr = JSON.stringify(musicList, null, 2);
+                    const blob = new Blob([dataStr], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `acrcloud_all_results.txt`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  };
+
+                  return (
+                    <div className="songs-list">
+                      <div className="song-info" style={{ marginBottom: '20px' }}>
+                        <div className="song-details" style={{ position: 'relative', width: '100%' }}>
+                          
+                          {/* Top row with Title and Dropdown */}
+                          <div style={{ display: 'contents' }}>
+                            <strong>Titel:</strong> 
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <p>{track.title}</p>
+                              {displayLimit > 1 && (
+                                <select 
+                                  className="track-dropdown"
+                                  value={selectedAcrTrack} 
+                                  onChange={(e) => setSelectedAcrTrack(Number(e.target.value))}
+                                >
+                                  {Array.from({ length: displayLimit }).map((_, i) => (
+                                    <option key={i} value={i}>{i + 1} / {displayLimit}</option>
+                                  ))}
+                                </select>
                               )}
                             </div>
-                          ))}
-                        </>
-                      )}
+                          </div>
+
+                          <strong>Künstler:</strong> <p>{track.artists?.map(a => a.name).join(', ')}</p>
+                          <strong>Album:</strong> <p>{track.album?.name}</p>
+                          <strong>Label:</strong> <p>{track.label}</p>
+                          <strong>Genres:</strong> <p>{track.genres?.map(g => g.name).join(', ')}</p>
+                          
+                          <strong>Score:</strong> 
+                          <p className={track.score === 100 ? 'score-highlight' : ''}>{track.score}%</p>
+                          
+                          {/* Ensure section headers span full width of the grid to not break alignment */}
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <hr style={{ margin: '15px 0 10px 0', borderColor: '#444' }} />
+                            <h4 style={{ margin: '0 0 5px 0', color: '#aaa', textAlign: 'center' }}>Content IDs</h4>
+                          </div>
+
+                          {track.acrid && (
+                            <><strong style={{ color: '#888' }}>ACRID:</strong> <p style={{ fontSize: '0.9em' }}>{track.acrid}</p></>
+                          )}
+                          {track.external_ids?.isrc && (
+                            <><strong style={{ color: '#888' }}>ISRC:</strong> <p style={{ fontSize: '0.9em' }}>{track.external_ids.isrc}</p></>
+                          )}
+                          {track.external_ids?.upc && (
+                            <><strong style={{ color: '#888' }}>UPC:</strong> <p style={{ fontSize: '0.9em' }}>{track.external_ids.upc}</p></>
+                          )}
+                          {track.external_metadata?.spotify?.track?.id && (
+                            <><strong style={{ color: '#888' }}>Spotify ID:</strong> <p style={{ fontSize: '0.9em' }}>{track.external_metadata.spotify.track.id}</p></>
+                          )}
+                          {track.external_metadata?.youtube?.vid && (
+                            <><strong style={{ color: '#888' }}>YouTube VID:</strong> <p style={{ fontSize: '0.9em' }}>{track.external_metadata.youtube.vid}</p></>
+                          )}
+
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <hr style={{ margin: '15px 0 10px 0', borderColor: '#444' }} />
+                            <h4 style={{ margin: '0 0 5px 0', color: '#aaa', textAlign: 'center' }}>Time Offsets</h4>
+                          </div>
+
+                          {track.db_begin_time_offset_ms !== undefined && (
+                            <><strong style={{ color: '#888' }}>DB Begin:</strong> <p style={{ fontSize: '0.9em' }}>{track.db_begin_time_offset_ms} ms</p></>
+                          )}
+                          {track.db_end_time_offset_ms !== undefined && (
+                            <><strong style={{ color: '#888' }}>DB End:</strong> <p style={{ fontSize: '0.9em' }}>{track.db_end_time_offset_ms} ms</p></>
+                          )}
+                          {track.sample_begin_time_offset_ms !== undefined && (
+                            <><strong style={{ color: '#888' }}>Sample Begin:</strong> <p style={{ fontSize: '0.9em' }}>{track.sample_begin_time_offset_ms} ms</p></>
+                          )}
+                          {track.sample_end_time_offset_ms !== undefined && (
+                            <><strong style={{ color: '#888' }}>Sample End:</strong> <p style={{ fontSize: '0.9em' }}>{track.sample_end_time_offset_ms} ms</p></>
+                          )}
+                          {rawTrackItem.offset !== undefined && (
+                            <><strong style={{ color: '#888' }}>File Offset:</strong> <p style={{ fontSize: '0.9em' }}>{rawTrackItem.offset} s</p></>
+                          )}
+                          {rawTrackItem.played_duration !== undefined && (
+                            <><strong style={{ color: '#888' }}>Played Duration:</strong> <p style={{ fontSize: '0.9em' }}>{rawTrackItem.played_duration} s</p></>
+                          )}
+
+                          {(track.rights_claim && track.rights_claim.length > 0) || (track.distributors && track.distributors.length > 0) ? (
+                            <div style={{ gridColumn: '1 / -1' }}>
+                              <hr style={{ margin: '15px 0 10px 0', borderColor: '#444' }} />
+                              <h4 style={{ margin: '0 0 5px 0', color: '#aaa', textAlign: 'center' }}>Rights Claim</h4>
+                              
+                              {track.distributors && track.distributors.length > 0 && (
+                                <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                                  <strong style={{ color: '#888' }}>Distributors:</strong> <span style={{ fontSize: '0.9em', color: 'white', marginLeft: '5px' }}>{track.distributors.join(', ')}</span>
+                                </div>
+                              )}
+
+                              {track.rights_claim?.map((claim, idx) => (
+                                <div key={idx} style={{ marginBottom: '5px', textAlign: 'center' }}>
+                                  {claim.distributor && (
+                                    <><strong style={{ color: '#888' }}>Distributor:</strong> <span style={{ fontSize: '0.9em', color: 'white', marginLeft: '5px' }}>{claim.distributor.name} (ID: {claim.distributor.id})</span></>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
+
+                          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <button className="download-btn" onClick={handleDownloadTxt}>
+                              Download
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <p>Kein Song erkannt oder ein Fehler ist aufgetreten (ACRCloud).</p>
-                )}
+                  );
+                })()}
               </div>
             )}
           </div>

@@ -22,8 +22,8 @@ cd build/AudioFingerprintChecker_artefacts/ || exit
 
 # 4. Zippen (WICHTIG für Mac VSTs & AUs!)
 echo -e "${BLUE}[3/3] Zippe VST3 & AU Plugin für GitHub...${NC}"
-VERSION_VST=$(grep "VERSION " ../../../vst-plugin/CMakeLists.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-ZIP_NAME="AudioFingerprintChecker_Mac_v${VERSION_VST}.zip"
+VERSION_VST=$(grep "project(AudioFingerprintChecker VERSION" ../../../vst-plugin/CMakeLists.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+ZIP_NAME="AudioFingerprintChecker_Vst3_Au_v${VERSION_VST}.zip"
 
 # Lösche altes Zip falls vorhanden
 rm -f "../../../releases/${ZIP_NAME}"

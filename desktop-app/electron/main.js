@@ -86,8 +86,79 @@ ipcMain.handle('analyze-audio', async (event, filePath, keys) => {
     }
 
     // ACRCloud
-    if (keys.acr_host && keys.acr_access_key && keys.acr_secret_key) {
+    if (keys.fs_bearer_token && keys.fs_container_id && keys.fs_region) {
       try {
+        event.sender.send('analyze-progress', 'Lade Datei in FS Container hoch...');
+        const fsUploadUrl = `https://api-${keys.fs_region}.acrcloud.com/api/fs-containers/${keys.fs_container_id}/files`;
+        
+        let fsForm = new FormData();
+        fsForm.append('data_type', 'audio');
+        fsForm.append('file', fileData, { filename: path.basename(filePath) });
+        
+        const fsUploadRes = await axios.post(fsUploadUrl, fsForm, {
+          headers: {
+            ...fsForm.getHeaders(),
+            'Authorization': `Bearer ${keys.fs_bearer_token}`
+          }
+        });
+        
+        let fileId = fsUploadRes.data?.data?.id;
+        
+        // Sometimes the upload response returns the id directly, sometimes under data
+        if (!fileId && fsUploadRes.data?.id) {
+          fileId = fsUploadRes.data.id;
+        }
+
+        if (!fileId) {
+          throw new Error("Konnte File ID nach Upload nicht extrahieren. Response: " + JSON.stringify(fsUploadRes.data));
+        }
+        
+        // Polling loop
+        event.sender.send('analyze-progress', 'Datei hochgeladen. Warte auf Analyse (Polling)...');
+        const fsResultUrl = `https://api-${keys.fs_region}.acrcloud.com/api/fs-containers/${keys.fs_container_id}/files/${fileId}`;
+        
+        let isDone = false;
+        let finalData = null;
+        let attempts = 0;
+        
+        while (!isDone && attempts < 60) {
+          await new Promise(r => setTimeout(r, 5000)); // wait 5 seconds
+          attempts++;
+          event.sender.send('analyze-progress', `Analysiere Datei in der Cloud... (${attempts * 5}s)`);
+          
+          const fsGetRes = await axios.get(fsResultUrl, {
+            headers: { 'Authorization': `Bearer ${keys.fs_bearer_token}` }
+          });
+          
+          const fileDataObj = fsGetRes.data?.data?.[0] || fsGetRes.data?.data;
+          const state = fileDataObj?.state;
+          const hasResults = fileDataObj?.results;
+          
+          if (hasResults) {
+            isDone = true;
+            finalData = fileDataObj.results;
+          } else if (state === 2 || state === 3 || state === 'error') {
+            isDone = true;
+            finalData = { error: "Scanning finished without results or failed." };
+          }
+        }
+        
+        if (!isDone) {
+          throw new Error("Timeout beim Warten auf ACRCloud FS Ergebnisse (5 Minuten).");
+        }
+        
+        results.acrcloud = finalData;
+        event.sender.send('analyze-progress', 'ACRCloud Analyse abgeschlossen!');
+      } catch (err) {
+        let msg = err.message;
+        if (err.response && err.response.data) {
+          msg += " " + JSON.stringify(err.response.data);
+        }
+        results.errors.push(`ACRCloud FS Error: ${msg}`);
+      }
+    } else if (keys.acr_host && keys.acr_access_key && keys.acr_secret_key) {
+      try {
+        event.sender.send('analyze-progress', 'Starte legacy ACRCloud Analyse...');
         const http_method = "POST";
         const http_uri = "/v1/identify";
         const data_type = "audio";
@@ -113,6 +184,7 @@ ipcMain.handle('analyze-audio', async (event, filePath, keys) => {
           headers: acrForm.getHeaders()
         });
         results.acrcloud = acrRes.data;
+        event.sender.send('analyze-progress', 'Analyse abgeschlossen!');
       } catch (err) {
         results.errors.push(`ACRCloud Error: ${err.message}`);
       }
